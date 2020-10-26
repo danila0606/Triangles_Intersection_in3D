@@ -44,9 +44,15 @@ public:
             s_.AddTriangle(i);
 
     };
-
+    
     //...............Constructor_end................
-
+    
+    ~Node() { for (int i = 0; i < 8; i++) {
+                    if (children_[i] != nullptr)
+                            delete children[i];
+        }
+    }   
+    
     std::vector<geo::Rectangle> SplitRect() const noexcept;
     size_t GetNumOfTr() const noexcept {return s_.GetNumOfTr();};
     std::set<size_t> GetIntersecTrNumbers();
@@ -173,6 +179,8 @@ public:
         Node *m = new Node(triangles, FindBoundingRect(triangles));
         main_ = m;
     };
+    
+    ~Octoree() {delete main_;};
 
     geo::Rectangle FindBoundingRect(const std::vector<geo::Triangle>& triangles) const noexcept ;
     void PrintIntersecTriangles();
@@ -205,7 +213,8 @@ geo::Rectangle Octotree::FindBoundingRect(const std::vector<geo::Triangle> &tria
             z_max = r.v_max_.z_;
     }
 
-
+   
+    
     return {geo::Vector(x_min,y_min, z_min), geo::Vector(x_max, y_max, z_max)};
 }
 
