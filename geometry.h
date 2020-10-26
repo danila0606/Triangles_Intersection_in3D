@@ -21,18 +21,14 @@ namespace geo {
         explicit Vector(const double& t) : x_(t), y_(t), z_(t) {};
         Vector() = default;
 
-        void PrintVector() const noexcept {std::cout << " D0: "<< x_
+        void PrintVector() const {std::cout << " D0: "<< x_
                                             << " D1: "<< y_
                                             << " D2: "<< z_;};
-        double Modul() const noexcept {return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);};
+        double Modul() const {return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);};
 
         double x_, y_, z_;
     };
 
-    std::ostream& operator <<(std::ostream& stream, const Vector& V) {
-        stream << " ["<<V.x_ <<","<< V.y_ <<"," << V.z_<<"] ";
-        return stream;
-    }
 
     bool operator == (const Vector& l, const Vector& r) {
         return ( (std::abs(l.x_ - r.x_) < eps) &&
@@ -97,7 +93,7 @@ namespace geo {
     }
 
     void Normalization(Vector& v) noexcept {
-        double modul = v.Modul();
+        const double modul = v.Modul();
         if (modul < pow(eps,2))
             return;
 
@@ -185,14 +181,16 @@ namespace geo {
             limit_rect = GetLimitRect();
         };
 
-        void PrintTriangle() const noexcept {std::cout<<"{("<< D0_ <<"),("<< D1_ <<"),("<< D2_ <<")}";};
+        void PrintTriangle() const  {std::cout<<"{("; D0_.PrintVector();
+                                     std::cout<<"),("; D1_.PrintVector();
+                                     std::cout<<"),("; D2_.PrintVector();std::cout<<")}";};
         bool Valid() const noexcept
         {
             return  !(D0_ == D1_) && !(D1_ == D2_) && !(D0_ == D2_) && !AreParallel((D0_ - D1_),(D0_ - D2_));
         }
 
         Rectangle GetLimitRect() const;
-        std::string ToString() const noexcept;
+        std::string ToString() const ;
 
 
         Rectangle limit_rect;
@@ -204,7 +202,7 @@ namespace geo {
         return t1.D0_ == t2.D0_ && t1.D1_ == t2.D1_ && t1.D2_ == t2.D2_;
     }
 
-    std::string Triangle::ToString() const noexcept {
+    std::string Triangle::ToString() const {
 
         return "[(" + std::to_string(D0_.x_) + ", " +
                       std::to_string(D0_.y_) + ", " +

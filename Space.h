@@ -298,7 +298,7 @@ std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const
     {
         if (std::abs(b1_b_dist) < geo::eps)
         {
-            if (std::abs(c1_c_dist) > geo::eps) {
+            if (std::abs(c1_c_dist) < geo::eps) {
                 throw std::invalid_argument("Unreal case");
             }
 
