@@ -49,7 +49,7 @@ public:
     
     ~Node() { for (int i = 0; i < 8; i++) {
                     if (children_[i] != nullptr)
-                            delete children[i];
+                            delete children_[i];
         }
     }   
     
@@ -180,7 +180,7 @@ public:
         main_ = m;
     };
     
-    ~Octoree() {delete main_;};
+    ~Octotree() {delete main_;};
 
     geo::Rectangle FindBoundingRect(const std::vector<geo::Triangle>& triangles) const noexcept ;
     void PrintIntersecTriangles();
