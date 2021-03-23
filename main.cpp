@@ -14,10 +14,10 @@ std::pair<std::vector<Vertex>, std::vector<uint16_t>>
 cam::CameraInfo MakeCamInfo(const Octotree& tree);
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
     try {
-        auto triangles = GetTrianglesFromFile("tests/test10000.txt");
+        auto triangles = GetTrianglesFromFile(argv[1]);
 
         Octotree tree(triangles);
         auto intersec_nums = tree.GetIntersecTriangles();

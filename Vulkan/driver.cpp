@@ -1181,10 +1181,6 @@ void TrianglesDrawer::drawFrame() {
 }
 
 void TrianglesDrawer::updateUniformBuffer(uint32_t currentImage) {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
     UniformBufferObject ubo{};
     ubo.model = glm::mat4(1.f);
