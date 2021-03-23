@@ -57,6 +57,9 @@ public:
     size_t GetNumOfTr() const noexcept {return s_.GetNumOfTr();};
     std::set<size_t> GetIntersecTrNumbers();
 
+    geo::Vector GetMaxCorner() const {return rect_.v_max_;};
+    geo::Vector GetMinCorner() const {return rect_.v_min_;};
+
 private:
 
     geo::Rectangle rect_;
@@ -184,6 +187,10 @@ public:
 
     geo::Rectangle FindBoundingRect(const std::vector<geo::Triangle>& triangles) const noexcept ;
     void PrintIntersecTriangles();
+    std::set<size_t> GetIntersecTriangles();
+
+    geo::Vector GetMaxCorner() const {return main_->GetMaxCorner();};
+    geo::Vector GetMinCorner() const {return main_->GetMinCorner();};
 
 private:
 
@@ -226,5 +233,12 @@ void Octotree::PrintIntersecTriangles() {
         std::cout<<i<<" ";
 
     std::cout<<'\n';
+}
+
+std::set<size_t> Octotree::GetIntersecTriangles() {
+
+    auto intersec_list = main_->GetIntersecTrNumbers();
+
+    return intersec_list;
 }
 
