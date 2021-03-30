@@ -14,11 +14,11 @@ layout(location = 2) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
 
-const vec3 light_dir = vec3(0.0, 0.0, -1.0);
+const vec3 light_dir = normalize(vec3(1.0, 1.0, 1.0));
 const float min_light = 0.2;
 
 void main() {
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
     float k = max(min_light, abs(dot(inNormal, light_dir)));
-    fragColor = inColor * k;
+    fragColor = inColor.xyz * k;
 }

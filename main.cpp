@@ -5,7 +5,7 @@
 #include "Vulkan/Info.h"
 #include "Intersection_Geometry/Octotree.h"
 
-std::vector<geo::Triangle> GetTrianglesFromFile(const std::string& filename);
+std::vector<geo::Triangle> GetTrianglesFromCin();
 
 std::pair<std::vector<Vertex>, std::vector<uint16_t>>
     TransformTrianglesToVertexesAndIndices
@@ -17,11 +17,12 @@ cam::CameraInfo MakeCamInfo(const Octotree& tree);
 int main(int argc, char* argv[]) {
 
     try {
-        auto triangles = GetTrianglesFromFile(argv[1]);
+        auto triangles = GetTrianglesFromCin();
 
         Octotree tree(triangles);
         auto intersec_nums = tree.GetIntersecTriangles();
         auto vert_and_ind = TransformTrianglesToVertexesAndIndices(triangles, intersec_nums);
+
 
         auto cam_info = MakeCamInfo(tree);
         cam::Camera cam(cam_info);
@@ -59,13 +60,9 @@ cam::CameraInfo MakeCamInfo(const Octotree& tree) {
     return info;
 }
 
-std::vector<geo::Triangle> GetTrianglesFromFile(const std::string& filename) {
+std::vector<geo::Triangle> GetTrianglesFromCin() {
 
-    std::ifstream str(filename);
-    if (!str.is_open()) {
-        std::cout << "Couldn't open file." << '\n';
-        exit(-1);
-    }
+    std::istream& str = std::cin;
 
     int N = 0;
     str>>N;
@@ -77,6 +74,10 @@ std::vector<geo::Triangle> GetTrianglesFromFile(const std::string& filename) {
 
         std::vector<geo::Vector> t;
 
+        if (!str.good()) {
+            std::cerr<<"Problems with cin!"<<std::endl;
+            exit(1);
+        }
         str >> x >> y >> z;
         t.emplace_back(x,y,z);
         str >> x >> y >> z;
@@ -123,6 +124,7 @@ TransformTrianglesToVertexesAndIndices
         auto p = elem.D0_;
         glm::vec3 pos(p.x_, p.y_, p.z_);
         vertices.push_back({pos, color, normal});
+
 
         p = elem.D1_;
         pos = {p.x_, p.y_, p.z_};
