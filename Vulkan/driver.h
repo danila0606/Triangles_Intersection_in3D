@@ -1,5 +1,4 @@
 #include "camera.h"
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -103,6 +102,11 @@ public:
             camera(camera_) {}
 
     void run();
+    void mainLoop(double time);
+    void cleanup();
+
+    bool IsClosed() const;
+    void UpdateBuffer(std::vector<Vertex> vertex_, std::vector<uint16_t> indices_);
 
 private:
     GLFWwindow* window;
@@ -168,9 +172,7 @@ private:
     }
 
     void initVulkan();
-    void mainLoop();
     void cleanupSwapChain();
-    void cleanup();
     void recreateSwapChain();
     void createInstance();
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
@@ -202,7 +204,9 @@ private:
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 
     void createVertexBuffer();
+    void updateVertexBuffer();
     void createIndexBuffer();
+    void updateIndexBuffer();
     void createUniformBuffers();
 
     void createDescriptorPool();
@@ -267,4 +271,5 @@ private:
 
         return VK_FALSE;
     }
+
 };

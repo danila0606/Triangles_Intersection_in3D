@@ -4,7 +4,7 @@ project(triangles)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(${PROJECT_NAME} main.cpp Vulkan/driver.cpp)
+add_executable(${PROJECT_NAME} main.cpp Vulkan/driver.cpp Intersection_Geometry/geometry.cpp Intersection_Geometry/Octotree.cpp Intersection_Geometry/Space.cpp Loader.cpp)
 
 find_package(Vulkan REQUIRED)
 find_package(X11 REQUIRED)

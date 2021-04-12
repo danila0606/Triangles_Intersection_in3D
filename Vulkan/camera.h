@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 namespace cam {
 
@@ -45,6 +46,7 @@ namespace cam {
 
             //Rotating
             if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                //std::cout<<"right";
                 const float dx = time * rotate_speed_;
                 RotateHorizontal(glm::radians((-dx) / static_cast<float>(window_width)));
             }

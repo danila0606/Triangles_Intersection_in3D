@@ -1,5 +1,6 @@
 #include "driver.h"
-#include "camera.h"
+
+#include <utility>
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -21,8 +22,8 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 void TrianglesDrawer::run() {
     initWindow();
     initVulkan();
-    mainLoop();
-    cleanup();
+    //mainLoop();
+    //cleanup();
 }
 
 void TrianglesDrawer::initWindow() {
@@ -58,18 +59,16 @@ void TrianglesDrawer::initVulkan() {
     createSyncObjects();
 }
 
-void TrianglesDrawer::mainLoop() {
-    auto startTime = std::chrono::high_resolution_clock::now();
-    while (!glfwWindowShouldClose(window)) {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-        startTime = currentTime;
-        glfwPollEvents();
-        camera.update(time, window);
-        drawFrame();
-    }
+bool TrianglesDrawer::IsClosed() const {
+    return glfwWindowShouldClose(window);
+}
 
-    vkDeviceWaitIdle(device);
+void TrianglesDrawer::mainLoop(double time) {
+
+    glfwPollEvents();
+    camera.update(time, window);
+    drawFrame();
+
 }
 
 void TrianglesDrawer::cleanupSwapChain() {
@@ -102,6 +101,8 @@ void TrianglesDrawer::cleanupSwapChain() {
 }
 
 void TrianglesDrawer::cleanup() {
+    vkDeviceWaitIdle(device);
+
     cleanupSwapChain();
 
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
@@ -673,7 +674,30 @@ void TrianglesDrawer::createImage(uint32_t width, uint32_t height, VkFormat form
     vkBindImageMemory(device, image, imageMemory, 0);
 }
 
+void TrianglesDrawer::updateVertexBuffer() {
+    assert(vertices.size() != 0);
+    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, vertices.data(), (size_t) bufferSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+
+    //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+
+    copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
 void TrianglesDrawer::createVertexBuffer() {
+    assert(vertices.size() != 0);
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
     VkBuffer stagingBuffer;
@@ -689,6 +713,26 @@ void TrianglesDrawer::createVertexBuffer() {
     createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 
     copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+void TrianglesDrawer::updateIndexBuffer() {
+    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, indices.data(), (size_t) bufferSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    //createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+    copyBuffer(stagingBuffer, indexBuffer, bufferSize);
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -1193,6 +1237,15 @@ void TrianglesDrawer::updateUniformBuffer(uint32_t currentImage) {
     vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
     memcpy(data, &ubo, sizeof(ubo));
     vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
+}
+
+void TrianglesDrawer::UpdateBuffer(std::vector<Vertex> vertex_, std::vector<uint16_t> indices_) {
+
+    vertices = std::move(vertex_);
+    indices = std::move(indices_);
+
+    updateVertexBuffer();
+    updateIndexBuffer();
 }
 
 
