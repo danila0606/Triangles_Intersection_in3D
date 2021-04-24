@@ -46,7 +46,6 @@ namespace cam {
 
             //Rotating
             if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                std::cout<<"right "<<std::endl;
                 const float dx = time * rotate_speed_;
                 RotateHorizontal(glm::radians((-dx) / static_cast<float>(window_width)));
             }
