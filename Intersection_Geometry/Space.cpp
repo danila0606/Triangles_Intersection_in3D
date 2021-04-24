@@ -108,12 +108,8 @@ std::pair<geo::Vector, Intersec> Space::IntersecLineLine(const geo::Line& l, con
     std::pair<geo::Vector, Intersec> res(0.f, Intersec::Nop);
     if (std::abs(det) < geo::eps)
     {
-        //std::cout<<"tut1"<<std::endl;
         if (geo::AreCoDirected((l.D_ - r.D_),l.A_))
-        {
-            //std::cout<<"tut2"<<std::endl;
             res.second = Intersec::Same;
-        }
     }
     else
     {
@@ -141,7 +137,6 @@ std::pair<geo::Vector, Intersec> Space::IntersecLineLine(const geo::Line& l, con
 std::pair<geo::Vector, Intersec> Space::IntersecCutLine(const geo::Cut& c, const geo::Line& l) {
 
     const auto tmp_res = IntersecLineLine(geo::Line(c.B_ - c.A_, c.A_), l);
-    //std::cout<<"Ebat"<<int(tmp_res.second)<<std::endl;
 
     if (tmp_res.second == Intersec::Dot)
     {
@@ -185,6 +180,7 @@ std::pair<geo::Line, Intersec> Space::IntersecPlanePlane(const geo::Plane& p1, c
      */
 
 
+
     if (geo::AreParallel(p1,p2) ) {
         if (geo::AreCoincide(p1, p2)) {
 
@@ -204,7 +200,7 @@ std::pair<geo::Line, Intersec> Space::IntersecPlanePlane(const geo::Plane& p1, c
     const double det = q * l - w * w;
     if (std::abs(det) < geo::eps / 100000.0)
     {
-        throw std::invalid_argument("Something error1");
+        return std::make_pair(geo::Line(p1.N_,p1.N_), Intersec::Nop);
     }
     else
     {
@@ -220,20 +216,19 @@ std::pair<geo::Line, Intersec> Space::IntersecPlanePlane(const geo::Plane& p1, c
         return std::make_pair(geo::Line(A, D),Intersec::Line);
     }
 
-    return std::make_pair(geo::Line(p1.N_,p1.N_), Intersec::Error);
 }
 
 std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const geo::Triangle& t, const geo::Triangle &t1) {
+
 
     const geo::Vector a1 = l.projection(t.D0_);
     const geo::Vector b1 = l.projection(t.D1_);
     const geo::Vector c1 = l.projection(t.D2_);
 
 
-    const geo::Vector  a1_a = t.D0_ - a1;
-    const geo::Vector  b1_b = t.D1_ - b1;
-    const geo::Vector  c1_c = t.D2_ - c1;
-
+    geo::Vector  a1_a = t.D0_ - a1;
+     geo::Vector  b1_b = t.D1_ - b1;
+     geo::Vector  c1_c = t.D2_ - c1;
 
     const geo::Vector  norm_line = GetPlaneFromTr(t).N_ ^ l.A_;
 
@@ -241,11 +236,9 @@ std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const
     const double b1_b_dist = (b1_b).Modul() * ((geo::AreCoDirected(norm_line, b1_b) ? 1.0 : -1.0));
     const double c1_c_dist = (c1_c).Modul() * ((geo::AreCoDirected(norm_line, c1_c) ? 1.0 : -1.0));
 
-
-    if (std::abs(a1_a_dist) > geo::eps && std::abs(b1_b_dist) > geo::eps && std::abs(c1_c_dist) > geo::eps
+    if (std::abs(a1_a_dist) > geo::eps  && std::abs(b1_b_dist) > geo::eps  && std::abs(c1_c_dist) > geo::eps
         && a1_a_dist * b1_b_dist > 0.0 && a1_a_dist * c1_c_dist > 0.0)
     {
-
         return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
     }
 
@@ -318,9 +311,10 @@ std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const
             const auto res_ca = IntersecCutLine(geo::Cut(t.D2_, t.D0_), l);
             const auto res_cb = IntersecCutLine(geo::Cut(t.D2_, t.D1_), l);
 
-            if (res_ca.second == Intersec::Nop || res_cb.second == Intersec::Nop)
-                throw std::invalid_argument("Something error2");
+            if (res_ca.second == Intersec::Nop || res_cb.second == Intersec::Nop) {
 
+                return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
+            }
 
             return std::make_pair(geo::Cut(res_ca.first, res_cb.first), Intersec::Cut);
         }
@@ -331,8 +325,8 @@ std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const
             const auto res_ac = IntersecCutLine(geo::Cut(t.D0_, t.D2_), l);
 
             if (res_ab.second == Intersec::Nop || res_ac.second == Intersec::Nop) {
-                throw std::invalid_argument("Something error3");
-                //return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
+
+                return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
             }
 
             return std::make_pair(geo::Cut(res_ab.first, res_ac.first), Intersec::Cut);
@@ -344,14 +338,12 @@ std::pair<geo::Cut, Intersec> Space::IntersecLineAndTr(const geo::Line& l, const
             const auto res_ba = IntersecCutLine(geo::Cut(t.D1_, t.D0_), l);
 
             if (res_bc.second == Intersec::Nop || res_ba.second == Intersec::Nop) {
-               // std::cout<<"Er: "<<a1_a_dist<<" "<<b1_b_dist<<" "<<c1_c_dist<<std::endl;
-               throw std::invalid_argument("Something error4");
-                //return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
+                return std::make_pair(geo::Cut{l.D_, l.D_}, Intersec::Nop);
             }
 
             return std::make_pair(geo::Cut(res_ba.first, res_bc.first), Intersec::Cut);
         }
-        else {  throw std::invalid_argument("Something error5"); }
+        else {  throw std::invalid_argument("Something error5: "+ std::to_string(t.number_)); }
     }
 
 }
@@ -375,7 +367,6 @@ bool Space::CheckCollision(const geo::Triangle &t1, const geo::Triangle &t2) {
     }
 
     auto c1 = IntersecLineAndTr(r.first, t1, t2);
-
     auto c2 = IntersecLineAndTr(r.first, t2, t1);
 
     if (c1.second == Intersec:: Error || c2.second == Intersec::Error) {

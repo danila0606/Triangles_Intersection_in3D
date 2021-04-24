@@ -43,11 +43,11 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
     for(const auto& i : trs) {
         for (int a = 0; a < 8; a++) {
 
-            if (s_.IsInclude(Child_Rects[a], i.limit_rect)) {
+            if (Space::IsInclude(Child_Rects[a], i.limit_rect)) {
                 trs_in[a].push_back(i);
                 a = 8;
             }
-            else if (s_.CheckCollision(Child_Rects[a], i)) {
+            else if (Space::CheckCollision(Child_Rects[a], i)) {
                 r_bad.push_back(i);
                 a = 8;
             }
@@ -57,9 +57,8 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
 
     r_bad_count = r_bad.size();
 
-    if (r_bad_count > s_.GetNumOfTr()/2) {
+    if (r_bad_count > s_.GetNumOfTr()/2)
         return s_.GetIntersectTriangles();
-    }
 
     std::set<size_t> ans; //returnable answer
 
@@ -70,7 +69,7 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
 
             for (const auto& a : r_bad) {
                 for (const auto& b : trs_in[i]) {
-                    if (s_.CheckCollision(a, b)) {
+                    if (Space::CheckCollision(a, b)) {
                         ans.insert(a.number_);
                         ans.insert(b.number_);
                     }
@@ -82,9 +81,9 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
     }
 
 
-    for (int i = 0; i < 8; i++) {
-        if (children_[i] != nullptr) {
-            std::set<size_t> ans_i = children_[i]->GetIntersecTrNumbers();
+    for (auto & i : children_) {
+        if (i != nullptr) {
+            std::set<size_t> ans_i = i->GetIntersecTrNumbers();
             ans.insert(ans_i.begin(), ans_i.end());
         }
     }
@@ -93,7 +92,7 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
 
         for (int t = i + 1; t < r_bad_count; t++) {
 
-            if (s_.CheckCollision(r_bad[i], r_bad[t])) {
+            if (Space::CheckCollision(r_bad[i], r_bad[t])) {
                 ans.insert(r_bad[i].number_);
                 ans.insert(r_bad[t].number_);
             }
@@ -106,7 +105,7 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
 }
 
 
-geo::Rectangle Octotree::FindBoundingRect(const std::vector<geo::Triangle> &triangles) const noexcept {
+geo::Rectangle Octotree::FindBoundingRect(const std::vector<geo::Triangle> &triangles) noexcept {
 
     double x_min = 0.0, y_min = 0.0, z_min = 0.0;
     double x_max = 0.0, y_max = 0.0, z_max = 0.0;

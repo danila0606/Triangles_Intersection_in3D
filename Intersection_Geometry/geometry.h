@@ -11,7 +11,7 @@
 
 namespace geo {
 
-    const double eps = 0.000001; // 0.000001
+    const double eps = 0.0000001; // 0.000001
 
     //.................Vector....................
 
@@ -175,6 +175,7 @@ namespace geo {
     Vector operator/(const Vector &r, const double a);
 
     Vector operator^(const Vector &l, const Vector &r);
+    void Round(Vector& v, size_t accuracy); // accuracy - number of decimal places
 
     void Normalization(Vector &v) noexcept;
     bool AreCoDirected(const Vector &l, const Vector &r) noexcept;
@@ -187,7 +188,7 @@ namespace geo {
 
     struct R_Triangle {
 
-        R_Triangle(Triangle tr, Cut dir, double speed) : tr_(tr) {
+        R_Triangle(Triangle tr, Cut dir, double speed) : tr_(tr), line_(dir.B_ - dir.A_, dir.A_) {
 
             omega_ = dir.B_ - dir.A_;
             Normalization(omega_);
@@ -196,6 +197,7 @@ namespace geo {
 
         void Rotate(double time);
 
+        Line line_;
         Triangle tr_;
         Vector omega_;
     };

@@ -24,15 +24,14 @@ int main(int argc, char* argv[]) {
 
 std::vector<geo::R_Triangle> GetTrianglesFromCin(double& time) {
 
-    std::ifstream str("tests/rotate_test2.txt");
+    /*std::ifstream str("tests/rotate_test3.txt");
 
     if (!str.is_open()) {
         std::cerr << "Cant open file! " << std::endl;
         exit(0);
-    }
+    }*/
 
-
-    //std::istream& str = std::cin;
+    std::istream& str = std::cin;
 
     int N = 0;
     str>>N>>time;
@@ -59,6 +58,7 @@ std::vector<geo::R_Triangle> GetTrianglesFromCin(double& time) {
             return l.Modul() < r.Modul();
         } );
         geo::Triangle tr(t[0], t[1], t[2],i);
+
 
         str>>x>>y>>z;
         geo::Vector A(x,y,z);

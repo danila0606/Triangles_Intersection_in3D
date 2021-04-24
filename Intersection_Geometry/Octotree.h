@@ -80,7 +80,7 @@ public:
     
     ~Octotree() {delete main_;};
 
-    geo::Rectangle FindBoundingRect(const std::vector<geo::Triangle>& triangles) const noexcept ;
+    static geo::Rectangle FindBoundingRect(const std::vector<geo::Triangle>& triangles) noexcept ;
     void PrintIntersecTriangles();
     std::set<size_t> GetIntersecTriangles();
 

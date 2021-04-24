@@ -158,25 +158,66 @@ namespace geo {
         Normalization(A_);
     };
 
+    void Round(Vector& v, size_t accuracy) {
+
+        int del = std::pow(10, accuracy);
+
+        v.x_ = std::round(v.x_ * del) / del;
+        v.y_ = std::round(v.y_ * del) / del;
+        v.z_ = std::round(v.z_ * del) / del;
+    }
 
     void R_Triangle::Rotate(double time) {
 
-        int del = 1000; // округление, в надежде что это поможет(
-        auto d0 = tr_.D0_ + ((omega_ ^ tr_.D0_) * time);
-        d0.x_ = std::round(d0.x_ * del) / del;
-        d0.y_ = std::round(d0.y_ * del) / del;
-        d0.z_ = std::round(d0.z_ * del) / del;
+        geo::Vector d0{},d1{},d2{};
+        double dt = 0.01;
 
-        auto d1 = tr_.D1_ + ((omega_ ^ tr_.D1_) * time);
-        d1.x_ = std::round(d1.x_ * del) / del;
-        d1.y_ = std::round(d1.y_ * del) / del;
-        d1.z_ = std::round(d1.z_ * del) / del;
+        if (time > dt) {
+            while (time > dt) {
 
-        auto d2 = tr_.D2_ + ((omega_ ^ tr_.D2_) * time);
-        d2.x_ = std::round(d2.x_ * del) / del;
-        d2.y_ = std::round(d2.y_ * del) / del;
-        d2.z_ = std::round(d2.z_ * del) / del;
+                size_t del = 10000;
+                Vector p0 = tr_.D0_ - line_.projection(tr_.D0_);
+                d0 = tr_.D0_ + (omega_ ^ p0) * dt;
+                d0.x_ = std::round(d0.x_ * del) / del;
+                d0.y_ = std::round(d0.y_ * del) / del;
+                d0.z_ = std::round(d0.z_ * del) / del;
 
+                Vector p1 = tr_.D1_ - line_.projection(tr_.D1_);
+                d1 = tr_.D1_ + (omega_ ^ p1) * dt;
+                d1.x_ = std::round(d1.x_ * del) / del;
+                d1.y_ = std::round(d1.y_ * del) / del;
+                d1.z_ = std::round(d1.z_ * del) / del;
+
+                Vector p2 = tr_.D2_ - line_.projection(tr_.D2_);
+                d2 = tr_.D2_ + (omega_ ^ p2) * dt;
+                d2.x_ = std::round(d2.x_ * del) / del;
+                d2.y_ = std::round(d2.y_ * del) / del;
+                d2.z_ = std::round(d2.z_ * del) / del;
+
+                dt += 0.01;
+            }
+        }
+        else {
+            size_t del = 10000;
+            Vector p0 = tr_.D0_ - line_.projection(tr_.D0_);
+            d0 = tr_.D0_ + (omega_ ^ p0) * time;
+            d0.x_ = std::round(d0.x_ * del) / del;
+            d0.y_ = std::round(d0.y_ * del) / del;
+            d0.z_ = std::round(d0.z_ * del) / del;
+
+            Vector p1 = tr_.D1_ - line_.projection(tr_.D1_);
+            d1 = tr_.D1_ + (omega_ ^ p1) * time;
+            d1.x_ = std::round(d1.x_ * del) / del;
+            d1.y_ = std::round(d1.y_ * del) / del;
+            d1.z_ = std::round(d1.z_ * del) / del;
+
+            Vector p2 = tr_.D2_ - line_.projection(tr_.D2_);
+            d2 = tr_.D2_ + (omega_ ^ p2) * time;
+            d2.x_ = std::round(d2.x_ * del) / del;
+            d2.y_ = std::round(d2.y_ * del) / del;
+            d2.z_ = std::round(d2.z_ * del) / del;
+
+        }
         std::vector<Vector> t = {d0, d1, d2};
 
         std::sort(t.begin(), t.end(), [](const geo::Vector l, const geo::Vector r) {
@@ -186,9 +227,7 @@ namespace geo {
         tr_.D0_ = t[0];
         tr_.D1_ = t[1];
         tr_.D2_ = t[2];
-
-        //std::cout<<tr_.number_<<" : "<< tr_.D0_.x_<<" "<<tr_.D0_.y_<<" "<<tr_.D0_.z_<<std::endl;
-        //std::cout<<tr_.number_<<" : "<< tr_.D1_.x_<<" "<<tr_.D1_.y_<<" "<<tr_.D1_.z_<<std::endl;
-        //std::cout<<tr_.number_<<" : "<< tr_.D2_.x_<<" "<<tr_.D2_.y_<<" "<<tr_.D2_.z_<<"\n"<<std::endl;
     }
 }
+
+

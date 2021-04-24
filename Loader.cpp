@@ -93,21 +93,19 @@ void Loader::Start() {
     while (!app.IsClosed()) {
         auto currentTime = std::chrono::high_resolution_clock::now();
         double time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-        if (time > MIN_TIME) {
-            //std::cout<<time<<" ";
-            startTime = currentTime;
-            begin += time;
-            if (begin < lifetime) {
 
-                for (auto &elem: rtriangles_)
-                    elem.Rotate(time);
+        startTime = currentTime;
+        begin += time;
+        if (begin < lifetime) {
 
-                Octotree tree(GetTriangles());
-                auto intersec_nums = tree.GetIntersecTriangles();
-                auto vert_and_ind = TransformTrianglesToVertexesAndIndices(intersec_nums);
+            for (auto &elem: rtriangles_)
+                elem.Rotate(time);
 
-                app.UpdateBuffer(vert_and_ind.first, vert_and_ind.second);
-            }
+            Octotree tree(GetTriangles());
+            auto intersec_nums = tree.GetIntersecTriangles();
+            auto vert_and_ind = TransformTrianglesToVertexesAndIndices(intersec_nums);
+
+            app.UpdateBuffer(vert_and_ind.first, vert_and_ind.second);
         }
 
         app.mainLoop(time);

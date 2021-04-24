@@ -4,8 +4,6 @@
 #include "Vulkan/Info.h"
 #include "Intersection_Geometry/Octotree.h"
 
-#define MIN_TIME 0.0002   // this is const period of time for each rotation
-
 class Loader final {
 public:
     Loader(std::vector<geo::R_Triangle> trs, double time = 0.0);
