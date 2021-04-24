@@ -47,11 +47,7 @@ public:
     
     //...............Constructor_end................
     
-    ~Node() { for (int i = 0; i < 8; i++) {
-                    if (children_[i] != nullptr)
-                            delete children_[i];
-        }
-    }   
+    ~Node() = default;
     
     std::vector<geo::Rectangle> SplitRect() const noexcept;
     size_t GetNumOfTr() const noexcept {return s_.GetNumOfTr();};
@@ -74,8 +70,7 @@ public:
 
     explicit Octotree(const std::vector<geo::Triangle>& triangles)  {
 
-        Node *m = new Node(triangles, FindBoundingRect(triangles));
-        main_ = m;
+        main_ = new Node(triangles, FindBoundingRect(triangles));
     };
     
     ~Octotree() {delete main_;};

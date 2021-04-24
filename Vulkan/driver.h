@@ -52,6 +52,9 @@ struct SwapChainSupportDetails {
 };
 
 struct Vertex {
+
+    Vertex(glm::vec3 pos_, glm::vec3 color_, glm::vec2 texCoord_) : pos(pos_), color(color_), texCoord(texCoord_) {};
+
     glm::vec3 pos;
     glm::vec3 color;
     glm::vec2 texCoord;

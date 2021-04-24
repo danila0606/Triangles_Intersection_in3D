@@ -31,24 +31,23 @@ Loader::TransformTrianglesToVertexesAndIndices
 
         auto p = elem.tr_.D0_;
         glm::vec3 pos(p.x_, p.y_, p.z_);
-        vertices.push_back({pos, color, normal});
-
+        vertices.emplace_back(pos, color, normal);
 
         p = elem.tr_.D1_;
         pos = {p.x_, p.y_, p.z_};
-        vertices.push_back({pos, color, normal});
+        vertices.emplace_back(pos, color, normal);
 
         p = elem.tr_.D2_;
         pos = {p.x_, p.y_, p.z_};
-        vertices.push_back({pos, color, normal});
+        vertices.emplace_back(pos, color, normal);
 
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 3);
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 2);
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 1);
+        indices.push_back(vertices.size() - 3);
+        indices.push_back(vertices.size() - 2);
+        indices.push_back(vertices.size() - 1);
 
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 3);
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 1);
-        indices.push_back(static_cast<uint16_t>(vertices.size()) - 2);
+        indices.push_back(vertices.size() - 3);
+        indices.push_back(vertices.size() - 1);
+        indices.push_back(vertices.size() - 2);
     }
 
     return {vertices, indices};

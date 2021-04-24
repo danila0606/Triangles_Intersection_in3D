@@ -33,8 +33,7 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
     const std::vector<geo::Rectangle> Child_Rects = SplitRect();
     std::vector<geo::Triangle> trs = s_.GetTriangles();
 
-    std::vector<std::vector<geo::Triangle>> trs_in;
-    trs_in.resize(8);
+    std::vector<std::vector<geo::Triangle>> trs_in(8);
 
     std::vector<geo::Triangle> r_bad;
     size_t r_bad_count = 0; //count of bad triangles, which intersect 0,1...6,7 rects
@@ -45,11 +44,11 @@ std::set<size_t> Node::GetIntersecTrNumbers() {
 
             if (Space::IsInclude(Child_Rects[a], i.limit_rect)) {
                 trs_in[a].push_back(i);
-                a = 8;
+                break;
             }
             else if (Space::CheckCollision(Child_Rects[a], i)) {
                 r_bad.push_back(i);
-                a = 8;
+                break;
             }
         }
 
